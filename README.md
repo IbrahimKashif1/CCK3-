@@ -1,2 +1,44 @@
-# CCK3-
-CCK3+
+# CCK3+
+
+Side Note: Due to the University of Waterloo's policy, I am unable to directly share the code on GitHub. However, if you are interested in viewing the code, please feel free to email me at i2kashif@uwaterloo.ca.
+
+Introduction
+
+CCK3+ was a group project. Our team created CC3K+, a dungeon crawler styled game, where the player has to navigate their way around a dungeon while collecting items and defeating enemies, with the final goal being making their way out of the dungeon. The following report will go into depth about the structure of the project, the challenges that we faced, and answers to design questions.
+
+Overview
+
+The main function is where everything culminates, and is where our game loop exists. It manages I/O, generates floors, and spawns enemies, items (potions, gold, barrier suit), stairs, and the player. The Floor class sets up the entire floor grid based on the .txt file, where each cell is occupied by a Cell class. The TextDisplay class observes every Cell, and each Cell observes its neighbors. Each Cell owns a GameObject, which keeps track of the corresponding graphic representation of an item/character on display and their coordinates. The Floor class keeps track if each tile is occupied by a GameObject, allows for the main function to spawn in items/characters at any valid cell, and can distinguish between the different types of GameObject occupying a certain cell. 
+The Character class is a subclass of GameObject, which further breaks down into subclasses Hero and Enemy. The Hero class stores any additional fields or methods unique to itself that didn’t exist in Character, and then is further broken down into individual character classes that the player can choose from; Human, Dwarf, Elf, and Orc. Similarly for the Enemy class, it is also broken down into different types of enemy classes that can spawn on the field; Vampire, Werewolf, Goblin, Merchant, Dragon, Phoenix, Troll, and Merchant. A Decorator design pattern is applied to the Hero class, allowing for the health, attack, and defence of the player to dynamically change whenever a potion is used.
+
+The Item class is an abstract class of GameObject, which breaks down into concrete Compass and BarrierSuit classes, and abstract Potions and Treasure classes. Potions and Treasures are further broken down into concrete classes for each potion and treasure (gold) type. The Stairs class is another concrete subclass of GameObject, which handles changing the graphic display of the stairs when the compass is picked up. We also have randomItemGeneration and randomEnemyGeneration functions which allow us to spawn in an arbitrary number of items and enemies based on a random seed.
+
+Design
+
+Floor: The Floor class is in charge of establishing the game map, registering character and item placements, and regulating character movement. Being the backbone of the game's mechanics, this class is supposed to be extremely cohesive. It keeps an internal representation of the game map and provides methods for other classes to interact with it, such as inquiring the type of a specific cell, determining whether a cell is occupied, or moving a character from one cell to another. The Floor class is also in charge of map generation, which involves randomly arranging obstacles, monsters, and riches.
+
+Character: The Character class is an abstract foundation class that contains all of the game's characters, including the player and enemy characters. It defines a collection of shared characteristics and behaviors shared by all characters, such as their position, health points, attack and defensive values, and mobility abilities. This class is intended to be expandable, allowing for the addition of new subclasses to introduce new forms of characters. The player hero, for example, is built as a subclass of Character that includes additional logic for processing user input and maintaining the Hero’s stuff. Character is also parent to class to enemy and this was done intentionally to allow us to easily implement both the Enemy and the Hero classes.
+
+Item: The Item class, like Character, is an abstract base class for all items in the game, including subclasses for potions and riches. It defines a collection of common characteristics and actions shared by all items, such as position, value, and the capacity to be picked up by a character. This class is intended to be expandable, allowing for the addition of new subclasses to introduce new categories of things. We could, for example, provide additional sorts of potions with varying effects or new types of riches with varying prices.
+
+Potion: The Potion class serves as the foundation for all potions in the game, with subclasses for various types of potions. It defines a set of basic characteristics and behaviors shared by all potions, such as their influence on a character's health, attack, or defensive values. Each Potion subclass is in charge of implementing the intricacies of the potion's effect. For example, the RestoreHealth potion subclass could have the effect of restoring a specified number of health points to a character.
+
+Treasure: The Treasure class is the foundation for all treasure in the game, with subclasses for various types of treasure. It defines a set of common characteristics and actions shared by all treasures, such as their value and the message displayed when picked up by a character. Each Treasure subclass is in charge of implementing the intricacies of the treasure's worth and presentation. For example, the Dragon treasure is guarded by a Dragon.
+
+Furthermore, the design incorporates numerous design patterns such as the decorator pattern and the observer pattern to construct and update game objects. The observer pattern is used to alert the game display whenever a game item is modified, whereas the decorator pattern is used to apply potions to heroes.
+
+Polymorphism and inheritance are used throughout the design to allow for abstraction and modularization of various game components. The Floor class, for example, can be readily adjusted to suit various map layouts, whereas the Character class serves as the foundation for all character classes in the game.
+
+Moreover, our design stresses minimum coupling and high cohesiveness, with each class having a distinct set of responsibilities and connecting with other classes via well-defined interfaces. This design approach reduces dependencies between distinct components, making it easier to adapt or add new features without breaking old code. High cohesion implies that each class should be responsible for a specific, well-defined set of activities, and low coupling implies that classes should communicate with one another via well-defined interfaces rather than tightly coupled connections. These concepts, when combined, make our design more modular, scalable, and maintainable.
+
+Resilience to Change:
+
+Our implementation of CC3K+ is quite resilient to change, across multiple aspects. For improvements and extra additions, if new enemies, heroes, or items needed to be added last minute, they could be added with ease. Since we created abstract classes for the characters, items and potions, breaking them down into concrete subclasses allows for any new ideas to be created with minimum code. 
+
+While we were already given a floor design, the size and shape of the floor could be easily changed as the Floor and Cell classes are already responsible for keeping track of which cells could be occupied by a GameObject, and which cells are walls/passages. This allows for complete freedom for the user to play CC3K+ with any floor design they want and allows for endless expansion. The number of floors can also be changed, so the length of the game could also be infinite. 
+
+Enemies already have the intelligence to stop moving when the player is in a 1 block radius. Since we’ve used the Observer Design Pattern, we can expand on this to allow the enemies to begin chasing the player once in a certain radius by notifying neighboring cells. Additional features suggested in the guidelines, such as Merchant selling potions or items to the player could also be easily implemented as there already exists a vector player inventory and the amount of gold, so interactions like this (between player and enemies) could be added. 
+
+If we wanted to spawn in more items, potions, or enemies, this could easily be accommodated as well through randomItemGeneration and randomEnemyGeneration functions, as long as there is enough tile space on the floor to allow for this. 
+Polymorphism and inheritance enable the simple addition of new enemy types with special abilities. New enemy kinds can be introduced without impacting the existing codebase by extending the base Enemy class and implementing the relevant methods. This technique is very modular and extendable, allowing for simple maintenance and future expansion. Generally, our design stresses low coupling and strong coherence, which helps to ensure that each component of the game is accountable for a specific set of activities, making the game easier to maintain and alter as needed.
+
